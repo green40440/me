@@ -26,34 +26,28 @@
     h1{margin:0;font-size:1.35rem;color:var(--accent1)}
     p.lead{margin:0;color:var(--muted)}
 
-    /* Game column */
     .left{padding:14px;background:var(--glass); border-radius:12px; min-height:420px}
     #cookieButton{width:220px;height:220px;border-radius:50%;border:none;background:linear-gradient(180deg,var(--accent1),var(--accent2));font-size:3.6rem;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.45);display:block;margin:14px auto;transition:transform .08s}
     #cookieButton:active{transform:scale(.92)}
+    #superCookie{display:none;width:120px;height:120px;border-radius:50%;border:none;background:radial-gradient(circle, #ff00ff, #ff9900);font-size:2.4rem;cursor:pointer;box-shadow:0 0 25px 8px rgba(255,0,255,0.5);margin:10px auto;animation:glow 1s infinite alternate;}
+    @keyframes glow{from{box-shadow:0 0 10px #ff00ff;}to{box-shadow:0 0 25px #ff9900;}}
     .stats{text-align:center}
     .stats .big{font-size:1.25rem;margin-top:8px}
     .cps{color:var(--muted);font-size:.95rem}
+    .discount-timer{color:#ff9e57;font-weight:700;margin-top:6px;font-size:.95rem;}
 
-    /* Right column */
     .right{padding:14px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)); border-radius:12px; min-height:420px}
     .shop{display:flex;flex-direction:column;gap:10px}
-    .shop-item{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;background:rgba(0,0,0,0.18);cursor:pointer}
+    .shop-item{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;background:rgba(0,0,0,0.18);cursor:pointer;transition:transform .15s;}
     .shop-item:hover{transform:translateY(-3px)}
-    .shop-left{display:flex;gap:10px;align-items:center}
-    .emoji{font-size:1.4rem}
-    .name{font-weight:600}
-    .meta{font-size:.9rem;color:var(--muted)}
-    .owned{font-size:.85rem;color:var(--muted)}
     .affordable{outline:2px solid rgba(255,255,255,0.06);box-shadow:0 6px 20px rgba(0,0,0,0.4)}
 
-    /* footer & misc */
     footer{grid-column:1/-1;text-align:center;color:var(--muted);font-size:.85rem;margin-top:6px}
     .controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
     .btn{background:rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;cursor:pointer;border:none;color:#fff}
     .col-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .section-title{font-size:.95rem;color:var(--accent1);margin:0 0 8px}
 
-    /* responsive */
     @media (max-width:960px){.site{grid-template-columns:1fr;}}
     @media (max-width:520px){#cookieButton{width:160px;height:160px;font-size:2.6rem}}
   </style>
@@ -77,8 +71,10 @@
     <main class="left">
       <div class="stats">
         <button id="cookieButton" title="Punch cookie">🍪</button>
+        <button id="superCookie" title="Super Cookie">🌟</button>
         <div id="score" class="big">Cookies: 0</div>
         <div id="cps" class="cps">Cookies per second: 0</div>
+        <div id="discountTimer" class="discount-timer"></div>
 
         <div class="controls">
           <button class="btn" id="saveBtn">Save</button>
@@ -89,229 +85,164 @@
 
       <div style="margin-top:14px">
         <h3 class="section-title">How to play</h3>
-        <p style="margin:6px 0;color:var(--muted)">Click the cookie to get cookies. Buy items in the shop to increase cookies per second (CPS). Items get more expensive each purchase.</p>
-      </div>
-
-      <div style="margin-top:12px">
-        <h3 class="section-title">Tips</h3>
-        <ul style="margin:6px 0;color:var(--muted);padding-left:18px">
-          <li>Buy cheap CPS early to scale faster.</li>
-          <li>Save often — progress is stored in your browser.</li>
-          <li>Try the Autopunch to make manual clicking easier.</li>
-        </ul>
+        <p style="margin:6px 0;color:var(--muted)">Click the cookie to get cookies. Buy items in the shop to increase cookies per second (CPS). Items get more expensive each purchase. Watch out for the Super Cookie—it gives 50% off for 30 seconds!</p>
       </div>
     </main>
 
     <aside class="right">
-      <div>
-        <h3 class="section-title">🛒 Shop</h3>
-        <div id="shop" class="shop"></div>
-      </div>
-
-      <div style="margin-top:12px">
-        <h3 class="section-title">Stats</h3>
-        <div class="col-2" style="margin-top:8px">
-          <div style="background:rgba(0,0,0,0.12);padding:12px;border-radius:8px">
-            <div style="font-weight:700;font-size:1.05rem" id="totalOwned">Owned: 0</div>
-            <div class="meta">Total items purchased</div>
-          </div>
-          <div style="background:rgba(0,0,0,0.12);padding:12px;border-radius:8px">
-            <div style="font-weight:700;font-size:1.05rem" id="highestCPS">Best CPS: 0</div>
-            <div class="meta">Highest cookies/second reached</div>
-          </div>
-        </div>
-      </div>
-
+      <h3 class="section-title">🛒 Shop</h3>
+      <div id="shop" class="shop"></div>
     </aside>
 
     <footer>
-      By Flapy + ChatGPT Flap Flap FLAPY is my youtube chanel ❤️❤️❤️
+      By Flapy + ChatGPT ❤️❤️❤️ Flap Flap FLAPY YouTube chanel!
     </footer>
   </div>
 
   <script>
-    // --- Game state ---
     let cookies = 0;
     let highestCPS = 0;
-    let autoPunch = false;
+    let discountActive = false;
+    let discountTimer = 0;
+    let discountCountdown;
 
-    // Items (expanded list)
     const items = [
       { name: "Cursor", emoji: "🖱️", cost: 10, cps: 1, owned: 0, costGrow: 1.5 },
       { name: "Grandpa", emoji: "👴", cost: 200, cps: 5, owned: 0, costGrow: 1.7 },
       { name: "Factory", emoji: "🏭", cost: 1000, cps: 25, owned: 0, costGrow: 1.8 },
-      { name: "cyclops", emoji: "👁️", cost: 2500, cps: 50, owned: 0, costGrow: 1.9 },
-      { name: "Wizard", emoji: "🧙", cost: 5000, cps: 100, owned: 0, costGrow: 1.955 },
-      { name: "cookie town", emoji: "🌆", cost: 10000, cps: 250, owned: 0, costGrow: 1.95 },
+      { name: "Cyclops", emoji: "👁️", cost: 2500, cps: 50, owned: 0, costGrow: 1.9 },
+      { name: "Wizard", emoji: "🧙", cost: 5000, cps: 100, owned: 0, costGrow: 1.95 },
+      { name: "Cookie Town", emoji: "🌆", cost: 10000, cps: 250, owned: 0, costGrow: 1.95 },
       { name: "Portal", emoji: "🚀", cost: 20000, cps: 500, owned: 0, costGrow: 2.0 },
       { name: "Time Machine", emoji: "⏳", cost: 100000, cps: 2500, owned: 0, costGrow: 2.15 },
       { name: "Cookie Galaxy", emoji: "🌌", cost: 500000, cps: 10000, owned: 0, costGrow: 2.3 }
     ];
 
-    // DOM refs
     const cookieButton = document.getElementById('cookieButton');
+    const superCookie = document.getElementById('superCookie');
     const scoreEl = document.getElementById('score');
     const cpsEl = document.getElementById('cps');
     const shopEl = document.getElementById('shop');
-    const totalOwnedEl = document.getElementById('totalOwned');
-    const highestCpsEl = document.getElementById('highestCPS');
+    const discountTimerEl = document.getElementById('discountTimer');
 
-    // Initialize
     function init(){
       cookieButton.addEventListener('click', ()=> addCookie(1));
       document.getElementById('saveBtn').addEventListener('click', saveGame);
       document.getElementById('loadBtn').addEventListener('click', loadGame);
       document.getElementById('resetBtn').addEventListener('click', resetGame);
-      document.getElementById('autopunchToggle').addEventListener('click', toggleAutopunch);
-      cookieButton.addEventListener('mousedown', ()=> cookieButton.style.transform = 'scale(.96)');
-      cookieButton.addEventListener('mouseup', ()=> cookieButton.style.transform = '');
+      superCookie.addEventListener('click', activateDiscount);
 
       buildShop();
       loadGame();
       updateUI();
+      spawnSuperCookie();
     }
 
     function addCookie(amount = 1){
-      cookies = Math.max(0, cookies + Math.floor(amount));
+      cookies += amount;
       updateUI();
     }
 
     function buyItem(index){
       const item = items[index];
-      if(cookies >= item.cost){
-        cookies -= item.cost;
+      const cost = discountActive ? item.cost / 2 : item.cost;
+      if(cookies >= cost){
+        cookies -= cost;
         item.owned++;
-        // increase cost using costGrow and round
         item.cost = Math.floor(item.cost * item.costGrow);
         updateUI();
-        buildShop();
-      } else {
-        // subtle feedback: shake button
-        flashNotEnough(shopEl.children[index]);
       }
     }
 
-    function flashNotEnough(el){
-      if(!el) return;
-      const orig = el.style.transform;
-      el.style.transform = 'translateX(6px)';
-      setTimeout(()=> el.style.transform = orig, 120);
-    }
-
-    // Auto generation per second
-    setInterval(()=>{
-      const total = items.reduce((s,i)=> s + i.owned * i.cps, 0);
-      if(total>0) addCookie(total);
-      if(total > highestCPS) highestCPS = total;
-    }, 1000);
-
-    // Autopunch (simulates clicks every X ms when enabled)
-    let autopunchInterval = null;
-    function toggleAutopunch(){
-      autoPunch = !autoPunch;
-      const btn = document.getElementById('autopunchToggle');
-      btn.textContent = `Autopunch: ${autoPunch? 'On' : 'Off'}`;
-      if(autoPunch){
-        autopunchInterval = setInterval(()=> addCookie(1), 120); // ~8.3 clicks/sec
-      } else {
-        clearInterval(autopunchInterval);
-        autopunchInterval = null;
-      }
-    }
-
-    // Build shop DOM
     function buildShop(){
       shopEl.innerHTML = '';
-      items.forEach((it, idx) => {
-        const row = document.createElement('div');
-        row.className = 'shop-item';
-        row.onclick = ()=> buyItem(idx);
-        row.innerHTML = `
-          <div class="shop-left">
-            <div class="emoji">${it.emoji}</div>
-            <div>
-              <div class="name">${it.name} <span class="owned">x${it.owned}</span></div>
-              <div class="meta">+${it.cps}/sec</div>
-            </div>
-          </div>
-          <div style="text-align:right">
-            <div style="font-weight:700">${formatNumber(it.cost)}</div>
-            <div class="meta">cost</div>
-          </div>
+      items.forEach((it, idx)=>{
+        const div = document.createElement('div');
+        const cost = discountActive ? Math.floor(it.cost/2) : it.cost;
+        div.className = 'shop-item';
+        div.onclick = ()=> buyItem(idx);
+        div.innerHTML = `
+          <div>${it.emoji} ${it.name} <span style="color:#999">x${it.owned}</span></div>
+          <div><b>${formatNumber(cost)}</b> 🍪</div>
         `;
-        shopEl.appendChild(row);
-      });
-      updateShopHighlight();
-    }
-
-    function updateShopHighlight(){
-      Array.from(shopEl.children).forEach((el, i)=>{
-        const affordable = cookies >= items[i].cost;
-        el.classList.toggle('affordable', affordable);
+        shopEl.appendChild(div);
       });
     }
 
     function updateUI(){
-      scoreEl.textContent = `Cookies: ${formatNumber(cookies)}`;
       const totalCPS = items.reduce((s,i)=> s + i.owned * i.cps, 0);
+      scoreEl.textContent = `Cookies: ${formatNumber(cookies)}`;
       cpsEl.textContent = `Cookies per second: ${formatNumber(totalCPS)}`;
-      totalOwnedEl.textContent = `Owned: ${items.reduce((s,i)=> s + i.owned, 0)}`;
-      highestCpsEl.textContent = `Best CPS: ${formatNumber(highestCPS)}`;
       buildShop();
     }
 
-    // Save / Load / Reset
+    // discount logic
+    function activateDiscount(){
+      superCookie.style.display = 'none';
+      discountActive = true;
+      discountTimer = 30;
+      updateDiscountTimer();
+      discountCountdown = setInterval(()=>{
+        discountTimer--;
+        updateDiscountTimer();
+        if(discountTimer <= 0){
+          clearInterval(discountCountdown);
+          discountActive = false;
+          discountTimerEl.textContent = '';
+        }
+      }, 1000);
+    }
+
+    function updateDiscountTimer(){
+      discountTimerEl.textContent = discountActive ? `50% OFF! ${discountTimer}s left!` : '';
+    }
+
+    // random spawn for Super Cookie
+    function spawnSuperCookie(){
+      setTimeout(()=>{
+        superCookie.style.display = 'block';
+        setTimeout(()=> superCookie.style.display = 'none', 8000); // visible for 8s
+        spawnSuperCookie();
+      }, Math.random()*30000 + 30000); // between 60s–300s
+    }
+
+    // autosave & load
     function saveGame(){
       const save = { cookies, items, highestCPS };
       localStorage.setItem('cookiepuncher_save', JSON.stringify(save));
       alert('Game saved!');
     }
+
     function loadGame(){
       const raw = localStorage.getItem('cookiepuncher_save');
       if(!raw) return;
-      try{
-        const parsed = JSON.parse(raw);
-        cookies = parsed.cookies || 0;
-        // ensure we don't overwrite unknown items length
-        if(parsed.items && Array.isArray(parsed.items)){
-          // Only copy owned and cost; keep default cps & costGrow in case code changed
-          parsed.items.forEach((si, i)=>{
-            if(items[i]){ items[i].owned = si.owned || 0; items[i].cost = si.cost || items[i].cost; }
-          });
-        }
-        highestCPS = parsed.highestCPS || highestCPS;
-        updateUI();
-        return true;
-      }catch(e){console.error('load failed',e);}
-    }
-
-    function resetGame(){
-      if(!confirm('Reset your save? This cannot be undone.')) return;
-      localStorage.removeItem('cookiepuncher_save');
-      cookies = 0; highestCPS = 0;
-      // reset items to initial configuration
-      items.forEach((it, i)=>{
-        // original base values
-        const base = [
-          {cost:10,owned:0},{cost:200,owned:0},{cost:1000,owned:0},{cost:5000,owned:0},{cost:20000,owned:0},{cost:100000,owned:0},{cost:500000,owned:0}
-        ];
-        it.cost = base[i].cost; it.owned = base[i].owned;
-      });
+      const data = JSON.parse(raw);
+      cookies = data.cookies || 0;
+      if(data.items) data.items.forEach((s,i)=>{ if(items[i]){ items[i].owned = s.owned; items[i].cost = s.cost; }});
       updateUI();
     }
 
-    // Utility
+    function resetGame(){
+      if(!confirm('Reset your game?')) return;
+      localStorage.removeItem('cookiepuncher_save');
+      location.reload();
+    }
+
+    // CPS loop
+    setInterval(()=>{
+      const total = items.reduce((s,i)=> s + i.owned * i.cps, 0);
+      cookies += total;
+      if(total > highestCPS) highestCPS = total;
+      updateUI();
+    }, 1000);
+
     function formatNumber(n){
       if(n >= 1e9) return (n/1e9).toFixed(2)+'B';
       if(n >= 1e6) return (n/1e6).toFixed(2)+'M';
       if(n >= 1e3) return (n/1e3).toFixed(2)+'K';
-      return n.toString();
+      return Math.floor(n);
     }
 
-    // Auto highlight update (lightweight)
-    setInterval(updateShopHighlight, 300);
-
-    // init on DOM ready
     document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
