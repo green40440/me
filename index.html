@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Cookie Puncher — cookiepuncher.fun</title>
-  <meta name="description" content="Cookie Puncher — a small incremental clicker game you can play in your browser. Punch cookies, buy upgrades, and build a cookie empire.">
+  <meta name="description" content="Cookie Puncher — click cookies, buy upgrades, and build a cookie empire.">
   <style>
     :root{
       --bg1: #0b1020; --bg2: #151a30; --accent1: #ffc857; --accent2:#ff9e57; --muted:#a0aec0;
@@ -17,7 +17,9 @@
       color:#fff; display:flex; align-items:center; justify-content:center; padding:24px;
     }
     .site{
-      width:100%; max-width:1100px; border-radius:14px; padding:18px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); box-shadow:0 10px 40px rgba(2,6,23,0.6);
+      width:100%; max-width:1100px; border-radius:14px; padding:18px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      box-shadow:0 10px 40px rgba(2,6,23,0.6);
       display:grid; grid-template-columns: 420px 1fr; gap:18px; align-items:start;
     }
     header{grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; gap:12px}
@@ -25,7 +27,6 @@
     .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent1),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:28px; color:#000; font-weight:700; box-shadow:0 6px 18px rgba(255,160,40,0.08)}
     h1{margin:0;font-size:1.35rem;color:var(--accent1)}
     p.lead{margin:0;color:var(--muted)}
-
     .left{padding:14px;background:var(--glass); border-radius:12px; min-height:420px}
     #cookieButton{width:220px;height:220px;border-radius:50%;border:none;background:linear-gradient(180deg,var(--accent1),var(--accent2));font-size:3.6rem;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.45);display:block;margin:14px auto;transition:transform .08s}
     #cookieButton:active{transform:scale(.92)}
@@ -35,19 +36,15 @@
     .stats .big{font-size:1.25rem;margin-top:8px}
     .cps{color:var(--muted);font-size:.95rem}
     .discount-timer{color:#ff9e57;font-weight:700;margin-top:6px;font-size:.95rem;}
-
     .right{padding:14px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)); border-radius:12px; min-height:420px}
     .shop{display:flex;flex-direction:column;gap:10px}
     .shop-item{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;background:rgba(0,0,0,0.18);cursor:pointer;transition:transform .15s;}
     .shop-item:hover{transform:translateY(-3px)}
     .affordable{outline:2px solid rgba(255,255,255,0.06);box-shadow:0 6px 20px rgba(0,0,0,0.4)}
-
     footer{grid-column:1/-1;text-align:center;color:var(--muted);font-size:.85rem;margin-top:6px}
     .controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
     .btn{background:rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;cursor:pointer;border:none;color:#fff}
-    .col-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .section-title{font-size:.95rem;color:var(--accent1);margin:0 0 8px}
-
     @media (max-width:960px){.site{grid-template-columns:1fr;}}
     @media (max-width:520px){#cookieButton{width:160px;height:160px;font-size:2.6rem}}
   </style>
@@ -85,7 +82,7 @@
 
       <div style="margin-top:14px">
         <h3 class="section-title">How to play</h3>
-        <p style="margin:6px 0;color:var(--muted)">Click the cookie to get cookies. Buy items in the shop to increase cookies per second (CPS). Items get more expensive each purchase. Watch out for the Super Cookie—it gives 50% off for 30 seconds!</p>
+        <p style="margin:6px 0;color:var(--muted)">Click the cookie to get cookies. Buy items in the shop to increase cookies per second (CPS). Watch out for the Super Cookie — it gives 50% off for 30 seconds!</p>
       </div>
     </main>
 
@@ -94,295 +91,163 @@
       <div id="shop" class="shop"></div>
     </aside>
 
-    <footer>
-      By Flapy + ChatGPT ❤️❤️❤️ Flap Flap FLAPY YouTube chanel!
-    </footer>
+    <footer>By Flapy + ChatGPT ❤️❤️❤️ Flap Flap FLAPY YouTube channel!</footer>
   </div>
 
   <script>
-    // --- Game Configuration & Constants ---
     const GAME_VERSION = '1.0';
     const SAVE_KEY = 'cookiepuncher_save';
 
-    const ITEM_DEFINITIONS = [
-        { name: "Cursor", emoji: "🖱️", baseCost: 10, cps: 1, costGrow: 1.5 },
-        { name: "Grandpa", emoji: "👴", baseCost: 200, cps: 5, costGrow: 1.7 },
-        { name: "Cookie Monster", emoji: "🍪😈", baseCost: 500, cps: 15, costGrow: 1.75 },
-        { name: "Factory", emoji: "🏭", baseCost: 1000, cps: 25, costGrow: 1.8 },
-        { name: "Cyclops", emoji: "👁️", baseCost: 2500, cps: 50, costGrow: 1.9 },
-        { name: "Wizard", emoji: "🧙", baseCost: 5000, cps: 100, costGrow: 1.95 },
-        { name: "Cookie Town", emoji: "🌆", baseCost: 10000, cps: 250, costGrow: 1.95 },
-        { name: "Portal", emoji: "🚀", baseCost: 20000, cps: 500, costGrow: 2.0 },
-        { name: "Time Machine", emoji: "⏳", baseCost: 100000, cps: 2500, costGrow: 2.15 },
-        { name: "Cookie Galaxy", emoji: "🌌", baseCost: 500000, cps: 10000, costGrow: 2.3 }
-    ];
+   const ITEM_DEFINITIONS = [ { name: "Cursor", emoji: "🖱️", baseCost: 10, cps: 1, costGrow: 1.5 }, { name: "Grandpa", emoji: "👴", baseCost: 200, cps: 5, costGrow: 1.7 }, { name: "Cookie Monster", emoji: "🍪😈", baseCost: 500, cps: 15, costGrow: 1.75 }, { name: "Factory", emoji: "🏭", baseCost: 1000, cps: 25, costGrow: 1.8 }, { name: "Cyclops", emoji: "👁️", baseCost: 2500, cps: 50, costGrow: 1.9 }, { name: "Wizard", emoji: "🧙", baseCost: 5000, cps: 100, costGrow: 1.95 }, { name: "Cookie Town", emoji: "🌆", baseCost: 10000, cps: 250, costGrow: 1.95 }, { name: "Portal", emoji: "🚀", baseCost: 20000, cps: 500, costGrow: 2.0 }, { name: "Time Machine", emoji: "⏳", baseCost: 100000, cps: 2500, costGrow: 2.15 }, { name: "Cookie Galaxy", emoji: "🌌", baseCost: 500000, cps: 10000, costGrow: 2.3 } ];
 
-    // --- Utility Functions ---
-
-    function formatNumber(n) {
-        if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';
-        if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
-        if (n >= 1e3) return (n / 1e3).toFixed(2) + 'K';
-        return Math.floor(n);
+    function formatNumber(n){
+      if(n >= 1e9) return (n/1e9).toFixed(2)+'B';
+      if(n >= 1e6) return (n/1e6).toFixed(2)+'M';
+      if(n >= 1e3) return (n/1e3).toFixed(2)+'K';
+      return Math.floor(n);
     }
-
-    // --- Main Game Class ---
 
     class CookiePuncherGame {
-        constructor() {
-            this.cookies = 0;
-            this.highestCPS = 0;
-            this.discountActive = false;
-            this.discountTimer = 0;
-            this.discountCountdown = null;
-            this.items = this._initializeItems();
+      constructor(){
+        this.cookies = 0;
+        this.discountActive = false;
+        this.discountTimer = 0;
+        this.items = ITEM_DEFINITIONS.map(d => ({...d, owned:0, cost:d.baseCost}));
 
-            this.dom = this._cacheDom();
-            this._bindEvents();
-            this.loadGame();
+        this.dom = {
+          cookieButton: document.getElementById('cookieButton'),
+          superCookie: document.getElementById('superCookie'),
+          scoreEl: document.getElementById('score'),
+          cpsEl: document.getElementById('cps'),
+          shopEl: document.getElementById('shop'),
+          discountTimerEl: document.getElementById('discountTimer'),
+          saveBtn: document.getElementById('saveBtn'),
+          loadBtn: document.getElementById('loadBtn'),
+          resetBtn: document.getElementById('resetBtn')
+        };
+
+        this._bindEvents();
+        this.buildShop();
+        this.updateUI();
+        this.startLoops();
+      }
+
+      _bindEvents(){
+        this.dom.cookieButton.addEventListener('click', ()=>{ this.addCookie(1); });
+        this.dom.superCookie.addEventListener('click', ()=> this.activateDiscount());
+        this.dom.saveBtn.addEventListener('click', ()=> this.saveGame(true));
+        this.dom.loadBtn.addEventListener('click', ()=> this.loadGame(true));
+        this.dom.resetBtn.addEventListener('click', ()=> this.resetGame());
+      }
+
+      get totalCPS(){
+        return this.items.reduce((sum,i)=>sum+i.owned*i.cps,0);
+      }
+
+      addCookie(n){ this.cookies += n; this.updateUI(); }
+
+      buyItem(i){
+        const item = this.items[i];
+        const cost = this.discountActive ? Math.floor(item.cost/2) : item.cost;
+        if(this.cookies >= cost){
+          this.cookies -= cost;
+          item.owned++;
+          item.cost = Math.floor(item.cost * item.costGrow);
+          this.updateUI();
+        }
+      }
+
+      activateDiscount(){
+        this.discountActive = true;
+        this.discountTimer = 30;
+        this.dom.superCookie.style.display='none';
+        const countdown = setInterval(()=>{
+          this.discountTimer--;
+          this.dom.discountTimerEl.textContent = `50% OFF! ${this.discountTimer}s`;
+          if(this.discountTimer<=0){
+            clearInterval(countdown);
+            this.discountActive=false;
+            this.dom.discountTimerEl.textContent='';
             this.updateUI();
-            this._startGameLoops();
+          }
+        },1000);
+      }
+
+      spawnSuperCookie(){
+        setTimeout(()=>{
+          if(!this.discountActive){
+            this.dom.superCookie.style.display='block';
+            setTimeout(()=> this.dom.superCookie.style.display='none',8000);
+          }
+          this.spawnSuperCookie();
+        }, Math.random()*30000+30000);
+      }
+
+      buildShop(){
+        this.dom.shopEl.innerHTML='';
+        this.items.forEach((item,i)=>{
+          const div=document.createElement('div');
+          div.className='shop-item';
+          div.innerHTML=`<div>${item.emoji} ${item.name} <span style="color:#999">x${item.owned}</span></div>
+          <div><b>${formatNumber(item.cost)}</b> 🍪</div>`;
+          div.addEventListener('click',()=>this.buyItem(i));
+          this.dom.shopEl.appendChild(div);
+        });
+      }
+
+      updateUI(){
+        this.dom.scoreEl.textContent = `Cookies: ${formatNumber(this.cookies)}`;
+        this.dom.cpsEl.textContent = `Cookies per second: ${formatNumber(this.totalCPS)}`;
+        const shopItems = this.dom.shopEl.querySelectorAll('.shop-item');
+        this.items.forEach((item,i)=>{
+          const cost=this.discountActive?Math.floor(item.cost/2):item.cost;
+          const el=shopItems[i];
+          el.querySelector('b').textContent=formatNumber(cost);
+          el.querySelector('span').textContent=`x${item.owned}`;
+          if(this.cookies>=cost) el.classList.add('affordable');
+          else el.classList.remove('affordable');
+        });
+      }
+
+      startLoops(){
+        setInterval(()=>{
+          this.cookies += this.totalCPS;
+          this.updateUI();
+        },1000);
+        this.spawnSuperCookie();
+      }
+
+      saveGame(show=false){
+        const save={
+          version:GAME_VERSION,
+          cookies:this.cookies,
+          items:this.items.map(i=>({owned:i.owned,cost:i.cost}))
+        };
+        localStorage.setItem(SAVE_KEY,JSON.stringify(save));
+        if(show) alert('Game saved!');
+      }
+
+      loadGame(show=false){
+        const data=localStorage.getItem(SAVE_KEY);
+        if(!data){ if(show) alert('No saved game.'); return; }
+        const s=JSON.parse(data);
+        this.cookies=s.cookies||0;
+        s.items.forEach((d,i)=>{
+          if(this.items[i]){ this.items[i].owned=d.owned; this.items[i].cost=d.cost; }
+        });
+        this.updateUI();
+        if(show) alert('Game loaded!');
+      }
+
+      resetGame(){
+        if(confirm('Reset everything?')){
+          localStorage.removeItem(SAVE_KEY);
+          location.reload();
         }
-
-        // Initialize item state from definitions
-        _initializeItems() {
-            return ITEM_DEFINITIONS.map(def => ({
-                ...def,
-                owned: 0,
-                cost: def.baseCost,
-            }));
-        }
-
-        // Cache DOM elements for efficient access
-        _cacheDom() {
-            return {
-                cookieButton: document.getElementById('cookieButton'),
-                superCookie: document.getElementById('superCookie'),
-                scoreEl: document.getElementById('score'),
-                cpsEl: document.getElementById('cps'),
-                shopEl: document.getElementById('shop'),
-                discountTimerEl: document.getElementById('discountTimer'),
-                saveBtn: document.getElementById('saveBtn'),
-                loadBtn: document.getElementById('loadBtn'),
-                resetBtn: document.getElementById('resetBtn'),
-            };
-        }
-
-        // Attach all event listeners
-        _bindEvents() {
-            this.dom.cookieButton.addEventListener('click', () => this.addCookie(1));
-            this.dom.superCookie.addEventListener('click', () => this.activateDiscount());
-            this.dom.saveBtn.addEventListener('click', () => this.saveGame(true));
-            this.dom.loadBtn.addEventListener('click', () => this.loadGame(true));
-            this.dom.resetBtn.addEventListener('click', () => this.resetGame());
-        }
-
-        // --- Core Game Logic ---
-
-        addCookie(amount = 1) {
-            this.cookies += amount;
-            this.updateUI();
-        }
-
-        get totalCPS() {
-            return this.items.reduce((sum, item) => sum + item.owned * item.cps, 0);
-        }
-
-        buyItem(index) {
-            const item = this.items[index];
-            // Calculate discounted cost
-            const cost = this.discountActive ? Math.floor(item.cost / 2) : item.cost;
-
-            if (this.cookies >= cost) {
-                this.cookies -= cost;
-                item.owned++;
-                // Exponential cost growth formula
-                item.cost = Math.floor(item.cost * item.costGrow);
-                this.updateUI();
-            }
-        }
-
-        // --- Discount Logic ---
-
-        activateDiscount() {
-            // Prevent stacking discounts
-            if (this.discountCountdown) clearInterval(this.discountCountdown);
-
-            this.dom.superCookie.style.display = 'none';
-            this.discountActive = true;
-            this.discountTimer = 30; // 30 seconds
-            this.updateDiscountTimer();
-            this.updateShopAffordability(); // Update costs in shop immediately
-
-            this.discountCountdown = setInterval(() => {
-                this.discountTimer--;
-                this.updateDiscountTimer();
-                if (this.discountTimer <= 0) {
-                    clearInterval(this.discountCountdown);
-                    this.discountActive = false;
-                    this.dom.discountTimerEl.textContent = '';
-                    this.updateShopAffordability(); // Reset costs in shop
-                }
-            }, 1000);
-        }
-
-        spawnSuperCookie() {
-            // Spawn interval between 30s and 60s
-            setTimeout(() => {
-                if (!this.discountActive) { // Only spawn if discount is not already running
-                    this.dom.superCookie.style.display = 'block';
-                    setTimeout(() => {
-                        this.dom.superCookie.style.display = 'none';
-                    }, 8000); // Visible for 8s
-                }
-                this.spawnSuperCookie(); // Recursive call for next spawn
-            }, Math.random() * 30000 + 30000);
-        }
-
-        // --- UI Rendering ---
-
-        buildShop() {
-            this.dom.shopEl.innerHTML = ''; // Clear and redraw entire shop
-            this.items.forEach((item, index) => {
-                const div = document.createElement('div');
-                // Calculate cost for display
-                const cost = this.discountActive ? Math.floor(item.cost / 2) : item.cost;
-                
-                div.className = 'shop-item';
-                if (this.cookies >= cost) {
-                    div.classList.add('affordable');
-                }
-                
-                div.onclick = () => this.buyItem(index);
-                div.innerHTML = `
-                    <div>${item.emoji} ${item.name} <span style="color:#999">x${item.owned}</span></div>
-                    <div><b>${formatNumber(cost)}</b> 🍪</div>
-                `;
-                this.dom.shopEl.appendChild(div);
-            });
-        }
-        
-        // Only updates numbers and affordability (more efficient than buildShop)
-        updateShopAffordability() {
-            const shopItems = this.dom.shopEl.querySelectorAll('.shop-item');
-            this.items.forEach((item, index) => {
-                const cost = this.discountActive ? Math.floor(item.cost / 2) : item.cost;
-                const shopItemEl = shopItems[index];
-
-                // Update cost text (if shop item exists)
-                if (shopItemEl) {
-                    shopItemEl.querySelector('b').textContent = formatNumber(cost);
-                    shopItemEl.querySelector('span').textContent = `x${item.owned}`;
-                    
-                    // Update affordability class
-                    if (this.cookies >= cost) {
-                        shopItemEl.classList.add('affordable');
-                    } else {
-                        shopItemEl.classList.remove('affordable');
-                    }
-                }
-            });
-        }
-
-        updateDiscountTimer() {
-            this.dom.discountTimerEl.textContent = this.discountActive ? `50% OFF! ${this.discountTimer}s left!` : '';
-        }
-
-        updateUI() {
-            // Only update the core stats efficiently
-            this.dom.scoreEl.textContent = `Cookies: ${formatNumber(this.cookies)}`;
-            this.dom.cpsEl.textContent = `Cookies per second: ${formatNumber(this.totalCPS)}`;
-            
-            // Use the dedicated affordability update after initial build
-            if (this.dom.shopEl.childElementCount === 0) {
-                this.buildShop();
-            } else {
-                this.updateShopAffordability();
-            }
-        }
-
-        // --- Game Loops ---
-
-        _startGameLoops() {
-            // CPS Loop (Runs once per second)
-            setInterval(() => {
-                const total = this.totalCPS;
-                this.cookies += total;
-                if (total > this.highestCPS) this.highestCPS = total;
-                this.updateUI();
-            }, 1000);
-
-            // Autosave Loop (Runs every 60 seconds)
-            setInterval(() => this.saveGame(), 60000);
-
-            // Super Cookie Spawn Loop
-            this.spawnSuperCookie();
-        }
-
-        // --- Save/Load/Reset ---
-        
-        saveGame(showConfirmation = false) {
-            const save = {
-                version: GAME_VERSION,
-                cookies: this.cookies,
-                highestCPS: this.highestCPS,
-                items: this.items.map(item => ({ owned: item.owned, cost: item.cost }))
-            };
-            
-            try {
-                localStorage.setItem(SAVE_KEY, JSON.stringify(save));
-                if (showConfirmation) alert('Game saved!');
-            } catch(e) {
-                 console.error("Could not save game to localStorage:", e);
-                 if (showConfirmation) alert('ERROR: Could not save game!');
-            }
-        }
-
-        loadGame(showConfirmation = false) {
-            const raw = localStorage.getItem(SAVE_KEY);
-            if (!raw) {
-                if (showConfirmation) alert('No saved game found.');
-                return; // Start a new game with default values
-            }
-
-            try {
-                const data = JSON.parse(raw);
-                this.cookies = data.cookies || 0;
-                this.highestCPS = data.highestCPS || 0;
-                
-                // Item migration logic (for future updates)
-                if (data.items) {
-                    data.items.forEach((savedItem, index) => {
-                        // Check if the item exists in the current definitions
-                        if (this.items[index]) {
-                            this.items[index].owned = savedItem.owned || 0;
-                            this.items[index].cost = savedItem.cost || this.items[index].baseCost;
-                        }
-                    });
-                }
-                
-                if (showConfirmation) alert('Game loaded!');
-            } catch(e) {
-                console.error("Could not parse saved game data:", e);
-                alert("ERROR: Could not load saved game! Starting new game.");
-                localStorage.removeItem(SAVE_KEY); // Remove corrupted save
-            }
-            
-            this.updateUI();
-        }
-
-        resetGame() {
-            if (!confirm('Are you sure you want to permanently reset all your progress?')) return;
-            localStorage.removeItem(SAVE_KEY);
-            location.reload();
-        }
+      }
     }
 
-    // Global initialization
-    document.addEventListener('DOMContentLoaded', () => {
-        // Start the game when the DOM is fully loaded
-        window.game = new CookiePuncherGame(); 
-    });
+    document.addEventListener('DOMContentLoaded',()=> new CookiePuncherGame());
   </script>
 </body>
 </html>
