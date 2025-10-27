@@ -98,7 +98,17 @@
     const GAME_VERSION = '1.0';
     const SAVE_KEY = 'cookiepuncher_save';
 
-   const ITEM_DEFINITIONS = [ { name: "Cursor", emoji: "🖱️", baseCost: 10, cps: 1, costGrow: 1.5 }, { name: "Grandpa", emoji: "👴", baseCost: 200, cps: 5, costGrow: 1.7 }, { name: "Cookie Monster", emoji: "🍪😈", baseCost: 500, cps: 15, costGrow: 1.75 }, { name: "Factory", emoji: "🏭", baseCost: 1000, cps: 25, costGrow: 1.8 }, { name: "Cyclops", emoji: "👁️", baseCost: 2500, cps: 50, costGrow: 1.9 }, { name: "Wizard", emoji: "🧙", baseCost: 5000, cps: 100, costGrow: 1.95 }, { name: "Cookie Town", emoji: "🌆", baseCost: 10000, cps: 250, costGrow: 1.95 }, { name: "Portal", emoji: "🚀", baseCost: 20000, cps: 500, costGrow: 2.0 }, { name: "Time Machine", emoji: "⏳", baseCost: 100000, cps: 2500, costGrow: 2.15 }, { name: "Cookie Galaxy", emoji: "🌌", baseCost: 500000, cps: 10000, costGrow: 2.3 } ];
+   const ITEM_DEFINITIONS = [ 
+                { name: "Cursor", emoji: "🖱️", baseCost: 10, cps: 1, costGrow: 1.5 },
+                { name: "Grandpa", emoji: "👴", baseCost: 200, cps: 5, costGrow: 1.7 }, 
+                { name: "Cookie Monster", emoji: "🍪😈", baseCost: 500, cps: 15, costGrow: 1.75 },
+                { name: "Factory", emoji: "🏭", baseCost: 1000, cps: 25, costGrow: 1.8 },
+                { name: "Cyclops", emoji: "👁️", baseCost: 2500, cps: 50, costGrow: 1.9 },
+                { name: "Wizard", emoji: "🧙", baseCost: 5000, cps: 100, costGrow: 1.95 },
+                { name: "Cookie Town", emoji: "🌆", baseCost: 10000, cps: 250, costGrow: 1.95 },
+                { name: "Portal", emoji: "🚀", baseCost: 20000, cps: 500, costGrow: 2.0 },
+                { name: "Time Machine", emoji: "⏳", baseCost: 100000, cps: 2500, costGrow: 2.15 }, 
+                { name: "Cookie Galaxy", emoji: "🌌", baseCost: 500000, cps: 10000, costGrow: 2.3 } ];
 
     function formatNumber(n){
       if(n >= 1e9) return (n/1e9).toFixed(2)+'B';
