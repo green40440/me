@@ -6,45 +6,582 @@
   <title>Cookie Puncher — cookiepuncher.fun</title>
   <meta name="description" content="Cookie Puncher — click cookies, buy upgrades, and build a cookie empire.">
   <style>
+    /* --- SKIN DEFINITIONS --- */
+    /* Default/Classic Skin (fallback if no class is set) */
     :root{
-      --bg1: #0b1020; --bg2: #151a30; --accent1: #ffc857; --accent2:#ff9e57; --muted:#a0aec0;
+      --bg1: #0b1020; --bg2: #151a30; /* Dark Blue */
+      --accent1: #ffc857; --accent2:#ff9e57; /* Orange/Yellow */
+      --muted:#a0aec0;
       --glass: rgba(255,255,255,0.04);
+      --site-shadow: 0 10px 40px rgba(2,6,23,0.6);
+      --cookie-color: linear-gradient(180deg,var(--accent1),var(--accent2));
+      --cookie-shadow: 0 10px 30px rgba(0,0,0,0.45);
+      --tab-bg: #151a30; /* Background for the bottom tab bar */
     }
+
+    /* Midnight Skin */
+    body.skin-Midnight {
+      --bg1: #1a1a1a; --bg2: #2d2d2d; /* Dark Gray */
+      --accent1: #95d4d4; --accent2:#66b2b2; /* Teal/Cyan */
+      --muted:#c0c0c0;
+      --glass: rgba(0,0,0,0.2);
+      --site-shadow: 0 10px 40px rgba(0,0,0,0.9);
+      --cookie-color: linear-gradient(180deg,#e0e0e0,#b0b0b0); /* Silver/Grey cookie */
+      --cookie-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      --tab-bg: #2d2d2d;
+    }
+    .skin-Midnight #superCookie {
+      background: radial-gradient(circle, #00ffff, #0066ff); /* Blue/Cyan glow */
+      box-shadow: 0 0 25px 8px rgba(0,255,255,0.5);
+    }
+    .skin-Midnight @keyframes glow {
+      from{box-shadow:0 0 10px #00ffff;}
+      to{box-shadow:0 0 25px #0066ff;}
+    }
+
+    /* Forest Skin */
+    body.skin-Forest {
+      --bg1: #1E3A24; --bg2: #2B5433; /* Deep Forest Green */
+      --accent1: #A4D46C; --accent2:#6CA443; /* Bright/Mossy Green */
+      --muted:#C8DBC5;
+      --glass: rgba(0,0,0,0.15);
+      --site-shadow: 0 10px 40px rgba(30,58,36,0.6);
+      --cookie-color: linear-gradient(180deg,#E7CF9C, #C3A675); /* Graham Cracker Cookie */
+      --cookie-shadow: 0 10px 30px rgba(30,58,36,0.8);
+      --tab-bg: #2B5433;
+    }
+    .skin-Forest #superCookie {
+      background: radial-gradient(circle, #ff00ff, #ff9900); /* Keep default glow for contrast */
+      box-shadow: 0 0 25px 8px rgba(255,0,255,0.5);
+    }
+
+    /* Lava Skin */
+    body.skin-Lava {
+      --bg1: #180505; --bg2: #380808; /* Dark Black/Red */
+      --accent1: #FF4500; --accent2:#FF8C00; /* Orange-Red/Deep Orange */
+      --muted:#ffc0cb; /* Light pink for contrast */
+      --glass: rgba(255, 69, 0, 0.1); /* Transparent Lava */
+      --site-shadow: 0 10px 40px rgba(255,69,0,0.3);
+      --cookie-color: linear-gradient(180deg,#303030,#101010); /* Obsidian/Burnt Cookie */
+      --cookie-shadow: 0 10px 30px rgba(255,69,0,0.45);
+      --tab-bg: #380808;
+    }
+    .skin-Lava #superCookie {
+      background: radial-gradient(circle, #ff0000, #ffff00); /* Red to Yellow Fire Glow */
+      box-shadow: 0 0 25px 8px rgba(255, 255, 0, 0.7);
+    }
+    .skin-Lava @keyframes glow {
+      from{box-shadow:0 0 10px #ff0000;}
+      to{box-shadow:0 0 25px #ff8c00;}
+    }
+    
+    /* Ocean Skin */
+    body.skin-Ocean {
+      --bg1: #0A3D62; --bg2: #165E87; /* Deep Sea Blue */
+      --accent1: #6EBFB9; --accent2:#4AA49D; /* Seafoam/Turquoise */
+      --muted:#B0E0E6; /* Pale Blue */
+      --glass: rgba(255,255,255,0.1);
+      --site-shadow: 0 10px 40px rgba(10,61,98,0.7);
+      --cookie-color: linear-gradient(180deg, #FFD700, #FFA500); /* Shiny Gold Cookie */
+      --cookie-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      --tab-bg: #165E87;
+    }
+    .skin-Ocean #superCookie {
+      background: radial-gradient(circle, #87CEEB, #4682B4); /* Sky to Steel Blue */
+    }
+    
+    /* Gold Skin */
+    body.skin-Gold {
+      --bg1: #3D3D3A; --bg2: #5B5B58; /* Slate Gray */
+      --accent1: #FFD700; --accent2:#DAA520; /* Gold/Goldenrod */
+      --muted:#EEDD82; /* Light Gold */
+      --glass: rgba(255,215,0,0.1);
+      --site-shadow: 0 10px 40px rgba(255,215,0,0.3);
+      --cookie-color: linear-gradient(180deg,#DAA520, #B8860B); /* Darker Gold Cookie */
+      --cookie-shadow: 0 10px 30px rgba(255,215,0,0.5);
+      --tab-bg: #5B5B58;
+    }
+    .skin-Gold #superCookie {
+      background: radial-gradient(circle, #FFFFFF, #E0E0E0); /* Bright White/Silver */
+      box-shadow: 0 0 25px 8px rgba(255,255,255,0.5);
+    }
+    
+    /* Retro Skin */
+    body.skin-Retro {
+      --bg1: #1B263B; --bg2: #2B3A5A; /* Dark Navy/Primary */
+      --accent1: #FF69B4; --accent2:#FF1493; /* Hot Pink */
+      --muted:#00FFFF; /* Cyan/Teal */
+      --glass: rgba(255,105,180,0.1);
+      --site-shadow: 0 10px 40px rgba(0,0,0,0.8);
+      --cookie-color: linear-gradient(180deg,#FFD700, #FF6347); /* Yellow to Tomato Red */
+      --cookie-shadow: 0 10px 30px rgba(255,105,180,0.5);
+      --tab-bg: #2B3A5A;
+    }
+    .skin-Retro #superCookie {
+      background: radial-gradient(circle, #00FFFF, #008080); /* Teal Glow */
+      box-shadow: 0 0 25px 8px rgba(0,255,255,0.7);
+    }
+    
+    /* High Contrast Skin */
+    body.skin-Contrast {
+      --bg1: #000000; --bg2: #111111; /* Pure Black */
+      --accent1: #39FF14; --accent2:#00CC00; /* Neon Green */
+      --muted:#FFFFFF; /* White */
+      --glass: rgba(57, 255, 20, 0.08);
+      --site-shadow: 0 10px 40px rgba(57, 255, 20, 0.3);
+      --cookie-color: linear-gradient(180deg, #FFFFFF, #E0E0E0); /* White Cookie */
+      --cookie-shadow: 0 10px 30px rgba(57, 255, 20, 0.5);
+      --tab-bg: #111111;
+    }
+    .skin-Contrast #superCookie {
+      background: radial-gradient(circle, #FFFF00, #FF00FF); /* Yellow to Magenta */
+      box-shadow: 0 0 25px 8px rgba(255, 255, 0, 0.7);
+    }
+
+    /* Candy Skin */
+    body.skin-Candy {
+      --bg1: #F08080; --bg2: #FFB6C1; /* Light Coral to Pink */
+      --accent1: #40E0D0; --accent2:#00CED1; /* Turquoise */
+      --muted:#8A2BE2; /* BlueViolet */
+      --glass: rgba(255, 255, 255, 0.5);
+      --site-shadow: 0 10px 40px rgba(255, 182, 193, 0.8);
+      --cookie-color: linear-gradient(180deg, #FFA07A, #FF7F50); /* Salmon Cookie */
+      --cookie-shadow: 0 10px 30px rgba(255, 99, 71, 0.6);
+      --tab-bg: #FFB6C1;
+      color: #333; /* Change text color for light background */
+    }
+    body.skin-Candy h1, body.skin-Candy .tab-button.active, body.skin-Candy .section-title {
+      color: var(--muted);
+    }
+    body.skin-Candy .btn, body.skin-Candy .shop-item {
+      color: #333;
+      background: rgba(255,255,255,0.8);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    body.skin-Candy #superCookie {
+      background: radial-gradient(circle, #FF69B4, #FF1493); /* Pink Glow */
+    }
+
+    /* Space Skin */
+    body.skin-Space {
+      --bg1: #000033; --bg2: #191970; /* Deep Midnight Blue */
+      --accent1: #FFCC00; --accent2:#FF9933; /* Star Gold */
+      --muted:#A9A9A9; /* Dark Gray */
+      --glass: rgba(255, 255, 255, 0.05);
+      --site-shadow: 0 10px 40px rgba(0, 0, 51, 0.9);
+      --cookie-color: radial-gradient(circle, #FFFFFF, #B0C4DE); /* Planetary Grey */
+      --cookie-shadow: 0 10px 30px rgba(255, 204, 0, 0.6);
+      --tab-bg: #191970;
+    }
+    .skin-Space #superCookie {
+      background: radial-gradient(circle, #7FFFD4, #00FFFF); /* Aqua Glow */
+    }
+
+    /* Autumn Skin */
+    body.skin-Autumn {
+      --bg1: #4B0000; --bg2: #800000; /* Deep Maroon/Red */
+      --accent1: #FF8C00; --accent2:#FFA500; /* Dark Orange/Pumpkin */
+      --muted:#F5DEB3; /* Wheat */
+      --glass: rgba(255, 140, 0, 0.1);
+      --site-shadow: 0 10px 40px rgba(75, 0, 0, 0.9);
+      --cookie-color: linear-gradient(180deg, #CD853F, #A0522D); /* Chocolate Brown Cookie */
+      --cookie-shadow: 0 10px 30px rgba(255, 140, 0, 0.5);
+      --tab-bg: #800000;
+    }
+    .skin-Autumn #superCookie {
+      background: radial-gradient(circle, #FFD700, #FF4500); /* Gold to Red Glow */
+    }
+
+    /* Vaporwave Skin */
+    body.skin-Vaporwave {
+      --bg1: #2B0E4D; --bg2: #411B65; /* Deep Purple */
+      --accent1: #FF00FF; --accent2:#00FFFF; /* Magenta/Cyan Neon */
+      --muted:#F4B4B4; /* Light Pink */
+      --glass: rgba(255, 0, 255, 0.1);
+      --site-shadow: 0 10px 40px rgba(255, 0, 255, 0.6);
+      --cookie-color: linear-gradient(180deg, #00FFFF, #00DDDD); /* Cyan Cookie */
+      --cookie-shadow: 0 10px 30px rgba(0, 255, 255, 0.5);
+      --tab-bg: #411B65;
+    }
+    .skin-Vaporwave @keyframes glow{
+      from{box-shadow:0 0 10px #FF00FF;}
+      to{box-shadow:0 0 25px #00FFFF;}
+    }
+
+    /* Jungle Skin */
+    body.skin-Jungle {
+      --bg1: #004D40; --bg2: #00796B; /* Dark Teal/Green */
+      --accent1: #FFEB3B; --accent2:#FBC02D; /* Bright Yellow/Banana */
+      --muted:#A5D6A7; /* Light Green */
+      --glass: rgba(255, 255, 255, 0.08);
+      --site-shadow: 0 10px 40px rgba(0, 77, 64, 0.8);
+      --cookie-color: linear-gradient(180deg, #4CAF50, #388E3C); /* Deep Green Cookie */
+      --cookie-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      --tab-bg: #00796B;
+    }
+    
+    /* Monochrome Skin */
+    body.skin-Monochrome {
+      --bg1: #000000; --bg2: #333333; /* Black to Dark Gray */
+      --accent1: #FFFFFF; --accent2:#DDDDDD; /* White */
+      --muted:#888888; /* Mid Gray */
+      --glass: rgba(255, 255, 255, 0.05);
+      --site-shadow: 0 10px 40px rgba(255, 255, 255, 0.1);
+      --cookie-color: linear-gradient(180deg, #AAAAAA, #666666); /* Grey Cookie */
+      --cookie-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+      --tab-bg: #333333;
+    }
+    .skin-Monochrome #superCookie {
+      background: radial-gradient(circle, #FFFF00, #FF0000); /* Color Pop */
+    }
+
+    /* Valentine Skin */
+    body.skin-Valentine {
+      --bg1: #880000; --bg2: #CC0000; /* Deep Red */
+      --accent1: #FFC0CB; --accent2:#FF69B4; /* Pink */
+      --muted:#F0F0F0; /* Off-White */
+      --glass: rgba(255, 192, 203, 0.15);
+      --site-shadow: 0 10px 40px rgba(204, 0, 0, 0.8);
+      --cookie-color: radial-gradient(circle, #FFFFFF, #FFC0CB); /* Heart Cookie */
+      --cookie-shadow: 0 10px 30px rgba(255, 105, 180, 0.5);
+      --tab-bg: #CC0000;
+    }
+
+    /* Ice Skin */
+    body.skin-Ice {
+      --bg1: #004466; --bg2: #3377AA; /* Dark to Light Blue */
+      --accent1: #98FBFB; --accent2:#CCFFFF; /* Bright Cyan/Ice */
+      --muted:#E0FFFF; /* Azure */
+      --glass: rgba(204, 255, 255, 0.2);
+      --site-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      --cookie-color: linear-gradient(180deg, #FFFFFF, #ADD8E6); /* White/Light Blue Cookie */
+      --cookie-shadow: 0 10px 30px rgba(152, 251, 251, 0.8);
+      --tab-bg: #3377AA;
+    }
+    .skin-Ice #superCookie {
+      background: radial-gradient(circle, #FFFFFF, #98FBFB); /* White/Cyan Glow */
+    }
+    
+    /* Laser Grid Skin (Cyberpunk Neon) */
+    body.skin-LaserGrid {
+      --bg1: #000000; --bg2: #0A001A; /* Black/Ultra Dark Purple */
+      --accent1: #FF33FF; --accent2:#33FFFF; /* Neon Pink & Cyan */
+      --muted:#39FF14; /* Neon Green */
+      --glass: rgba(51, 255, 255, 0.1);
+      --site-shadow: 0 10px 40px rgba(255, 51, 255, 0.7);
+      --cookie-color: linear-gradient(45deg, #FF33FF, #33FFFF); /* Bi-color Cookie */
+      --cookie-shadow: 0 10px 30px rgba(255, 51, 255, 0.8);
+      --tab-bg: #0A001A;
+    }
+    .skin-LaserGrid @keyframes glow{
+      from{box-shadow:0 0 10px #FF33FF;}
+      to{box-shadow:0 0 25px #33FFFF;}
+    }
+
+    /* Toxic Skin (Neon Green/Yellow) */
+    body.skin-Toxic {
+      --bg1: #101000; --bg2: #303000; /* Dark Yellow/Green */
+      --accent1: #CCFF00; --accent2:#99FF00; /* Lime Green */
+      --muted:#FF6600; /* Safety Orange */
+      --glass: rgba(204, 255, 0, 0.1);
+      --site-shadow: 0 10px 40px rgba(153, 255, 0, 0.6);
+      --cookie-color: radial-gradient(circle, #00FF00, #00CC00); /* Nuclear Green Cookie */
+      --cookie-shadow: 0 10px 30px rgba(0, 255, 0, 0.7);
+      --tab-bg: #303000;
+    }
+    .skin-Toxic #superCookie {
+      background: radial-gradient(circle, #FF00FF, #FF0000); /* Magenta/Red Pop */
+    }
+    .skin-Toxic @keyframes glow{
+      from{box-shadow:0 0 10px #CCFF00;}
+      to{box-shadow:0 0 25px #99FF00;}
+    }
+
+    /* Electric Skin (Neon Blue/Yellow) */
+    body.skin-Electric {
+      --bg1: #00002A; --bg2: #00004F; /* Deep Electric Blue */
+      --accent1: #FFFF33; --accent2:#FFCC00; /* Bright Yellow/Lightning */
+      --muted:#33CCFF; /* Electric Blue */
+      --glass: rgba(255, 255, 51, 0.1);
+      --site-shadow: 0 10px 40px rgba(255, 250, 50, 0.7);
+      --cookie-color: linear-gradient(180deg, #33CCFF, #0099FF); /* Blue Cookie */
+      --cookie-shadow: 0 10px 30px rgba(255, 250, 50, 0.6);
+      --tab-bg: #00004F;
+    }
+    .skin-Electric #superCookie {
+      background: radial-gradient(circle, #FFFFFF, #FFFF33); /* White/Yellow Glow */
+    }
+
+    /* Hacker Skin (Dark Green Matrix) */
+    body.skin-Hacker {
+      --bg1: #000000; --bg2: #001A00; /* Black/Matrix Dark Green */
+      --accent1: #00FF00; --accent2:#33FF33; /* Bright Green */
+      --muted:#00AA00; /* Darker Green */
+      --glass: rgba(0, 255, 0, 0.08);
+      --site-shadow: 0 10px 40px rgba(0, 255, 0, 0.5);
+      --cookie-color: linear-gradient(180deg, #FFFFFF, #DDDDDD); /* White/Code Cookie */
+      --cookie-shadow: 0 10px 30px rgba(0, 255, 0, 0.7);
+      --tab-bg: #001A00;
+    }
+    .skin-Hacker #superCookie {
+      background: radial-gradient(circle, #FF00FF, #FF0000); /* Pink/Red error glow */
+    }
+    .skin-Hacker @keyframes glow{
+      from{box-shadow:0 0 10px #00FF00;}
+      to{box-shadow:0 0 25px #33FF33;}
+    }
+    
+    /* --- NEW: Firestorm Skin (Red/Orange/Yellow Neon) --- */
+    body.skin-Firestorm {
+      --bg1: #1A0000; --bg2: #330000; /* Darkest Red */
+      --accent1: #FF4500; --accent2:#FFEA00; /* Orange-Red to Neon Yellow */
+      --muted:#FF00FF; /* Neon Magenta */
+      --glass: rgba(255, 69, 0, 0.15);
+      --site-shadow: 0 10px 40px rgba(255, 69, 0, 0.8);
+      --cookie-color: radial-gradient(circle, #FF8C00, #FF3D00); /* Volcanic Cookie */
+      --cookie-shadow: 0 10px 30px rgba(255, 69, 0, 0.9);
+      --tab-bg: #330000;
+    }
+    .skin-Firestorm @keyframes glow {
+      from{box-shadow:0 0 10px #FFEA00;}
+      to{box-shadow:0 0 25px #FF4500;}
+    }
+
+    /* --- NEW: Deep Pink Skin (Pink/Purple) --- */
+    body.skin-DeepPink {
+      --bg1: #100020; --bg2: #25004A; /* Deep Blue-Purple */
+      --accent1: #FF1493; --accent2:#EA00FF; /* Deep Pink to Bright Violet */
+      --muted:#00FFFF; /* Cyan/Aqua */
+      --glass: rgba(255, 20, 147, 0.15);
+      --site-shadow: 0 10px 40px rgba(234, 0, 255, 0.7);
+      --cookie-color: linear-gradient(180deg, #FF1493, #FF44CC); /* Hot Pink Cookie */
+      --cookie-shadow: 0 10px 30px rgba(255, 20, 147, 0.8);
+      --tab-bg: #25004A;
+    }
+    .skin-DeepPink @keyframes glow {
+      from{box-shadow:0 0 10px #EA00FF;}
+      to{box-shadow:0 0 25px #FF1493;}
+    }
+
+    /* --- NEW: Sub Zero Skin (Cool Blue/Cyan) --- */
+    body.skin-SubZero {
+      --bg1: #001A33; --bg2: #003366; /* Deep Blue */
+      --accent1: #0FF0FC; --accent2:#7FFFD4; /* Neon Cyan to Aqua */
+      --muted:#FFFFFF; /* White/Ice */
+      --glass: rgba(127, 255, 212, 0.15);
+      --site-shadow: 0 10px 40px rgba(0, 240, 252, 0.7);
+      --cookie-color: radial-gradient(circle, #FFFFFF, #ADD8E6); /* Icy White Cookie */
+      --cookie-shadow: 0 10px 30px rgba(0, 240, 252, 0.8);
+      --tab-bg: #003366;
+    }
+    .skin-SubZero @keyframes glow {
+      from{box-shadow:0 0 10px #0FF0FC;}
+      to{box-shadow:0 0 25px #7FFFD4;}
+    }
+
+    /* --- NEW: Glitch Skin (R/G/B Separation Effect) --- */
+    body.skin-Glitch {
+      --bg1: #000000; --bg2: #000000; /* Pure Black */
+      --accent1: #FF00FF; --accent2:#00FFFF; /* Magenta/Cyan */
+      --muted:#39FF14; /* Neon Green */
+      --glass: rgba(255, 0, 255, 0.08);
+      --site-shadow: 0 10px 40px rgba(0, 255, 255, 0.6);
+      --cookie-color: linear-gradient(180deg, #FF0000, #00FF00); /* Red/Green Error Cookie */
+      --cookie-shadow: 0 10px 30px rgba(255, 0, 0, 0.7), -5px -5px 15px rgba(0, 255, 255, 0.7); /* Double Glitch Shadow */
+      --tab-bg: #111111;
+    }
+    .skin-Glitch @keyframes glow{
+      from{box-shadow:0 0 10px #FF00FF;}
+      to{box-shadow:0 0 25px #00FFFF;}
+    }
+
+    /* --- NEW: Toxic Waste Skin (High Contrast Green/Orange) --- */
+    body.skin-ToxicWaste {
+      --bg1: #000D00; --bg2: #002500; /* Ultra Dark Green */
+      --accent1: #CCFF00; --accent2:#FF8C00; /* Lime Green/Dark Orange */
+      --muted:#FFFFFF; /* White */
+      --glass: rgba(204, 255, 0, 0.15);
+      --site-shadow: 0 10px 40px rgba(204, 255, 0, 0.8);
+      --cookie-color: radial-gradient(circle, #39FF14, #00AA00); /* Pure Toxic Green Cookie */
+      --cookie-shadow: 0 10px 30px rgba(255, 140, 0, 0.7); /* Orange Shadow */
+      --tab-bg: #002500;
+    }
+    .skin-ToxicWaste @keyframes glow{
+      from{box-shadow:0 0 10px #FF8C00;}
+      to{box-shadow:0 0 25px #CCFF00;}
+    }
+
+    /* --- BASE STYLES --- */
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
     body{
       background: linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 100%);
-      color:#fff; display:flex; align-items:center; justify-content:center; padding:24px;
+      color:#fff; 
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      padding:24px;
+      transition: background 0.5s ease, color 0.5s ease;
     }
     .site{
-      width:100%; max-width:1100px; border-radius:14px; padding:18px;
+      width:100%; 
+      max-width:1100px; 
+      border-radius:14px; 
+      padding:18px;
       background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      box-shadow:0 10px 40px rgba(2,6,23,0.6);
-      display:grid; grid-template-columns: 420px 1fr; gap:18px; align-items:start;
+      box-shadow:var(--site-shadow);
+      grid-template-columns: 1fr; 
+      gap:18px; 
+      align-items:start;
+      padding-bottom: 90px;
     }
     header{grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; gap:12px}
     .brand{display:flex; gap:12px; align-items:center}
     .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent1),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:28px; color:#000; font-weight:700; box-shadow:0 6px 18px rgba(255,160,40,0.08)}
     h1{margin:0;font-size:1.35rem;color:var(--accent1)}
     p.lead{margin:0;color:var(--muted)}
-    .left{padding:14px;background:var(--glass); border-radius:12px; min-height:420px}
-    #cookieButton{width:220px;height:220px;border-radius:50%;border:none;background:linear-gradient(180deg,var(--accent1),var(--accent2));font-size:3.6rem;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.45);display:block;margin:14px auto;transition:transform .08s}
+    .left{padding:14px;background:var(--glass); border-radius:12px; min-height:420px; width: 100%;}
+    #cookieButton{
+      width:220px;height:220px;border-radius:50%;border:none;
+      background:var(--cookie-color);
+      font-size:3.6rem;cursor:pointer;
+      box-shadow:var(--cookie-shadow);
+      display:block;margin:14px auto;transition:transform .08s
+    }
     #cookieButton:active{transform:scale(.92)}
-    #superCookie{display:none;width:120px;height:120px;border-radius:50%;border:none;background:radial-gradient(circle, #ff00ff, #ff9900);font-size:2.4rem;cursor:pointer;box-shadow:0 0 25px 8px rgba(255,0,255,0.5);margin:10px auto;animation:glow 1s infinite alternate;}
+    #superCookie{
+      display:none;width:120px;height:120px;border-radius:50%;border:none;
+      background:radial-gradient(circle, #ff00ff, #ff9900);
+      font-size:2.4rem;cursor:pointer;
+      box-shadow:0 0 25px 8px rgba(255,0,255,0.5);
+      margin:10px auto;animation:glow 1s infinite alternate;
+    }
     @keyframes glow{from{box-shadow:0 0 10px #ff00ff;}to{box-shadow:0 0 25px #ff9900;}}
+    
     .stats{text-align:center}
     .stats .big{font-size:1.25rem;margin-top:8px}
     .cps{color:var(--muted);font-size:.95rem}
-    .discount-timer{color:#ff9e57;font-weight:700;margin-top:6px;font-size:.95rem;}
-    .right{padding:14px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)); border-radius:12px; min-height:420px}
+    .discount-timer{color:var(--accent2);font-weight:700;margin-top:6px;font-size:.95rem;}
+    
+    .right{
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        max-width: 100vw;
+        height: 70px;
+        padding: 0;
+        background: var(--tab-bg);
+        box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+        border-radius: 0;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        transition: background 0.5s ease;
+    }
+
+    #tabOverlay {
+        position: fixed;
+        bottom: 70px;
+        left: 0;
+        right: 0;
+        background: var(--tab-bg);
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+        padding: 15px;
+        max-height: 80vh;
+        overflow-y: auto;
+        display: none;
+        z-index: 999;
+        box-shadow: 0 -5px 20px rgba(0,0,0,0.4);
+        transition: background 0.5s ease;
+    }
+    #tabOverlay.active {
+        display: block;
+    }
+
+    .tabs-container {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        height: 70px;
+        width: 100%;
+    }
+    .tab-button {
+        background: transparent;
+        border: none;
+        padding: 8px 15px;
+        color: var(--muted);
+        cursor: pointer;
+        font-weight: 600;
+        transition: color 0.2s, border-bottom 0.2s;
+        border-bottom: 3px solid transparent;
+        line-height: 1.2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        font-size: 0.85rem;
+    }
+    .tab-button.active {
+        color: var(--accent1);
+        border-bottom: 3px solid var(--accent1);
+    }
+    
+    .tab-content {
+        display: none;
+        padding-top: 10px;
+    }
+    .tab-content.active {
+        display: block;
+    }
+    
     .shop{display:flex;flex-direction:column;gap:10px}
     .shop-item{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;background:rgba(0,0,0,0.18);cursor:pointer;transition:transform .15s;}
     .shop-item:hover{transform:translateY(-3px)}
     .affordable{outline:2px solid rgba(255,255,255,0.06);box-shadow:0 6px 20px rgba(0,0,0,0.4)}
+    
     footer{grid-column:1/-1;text-align:center;color:var(--muted);font-size:.85rem;margin-top:6px}
     .controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
-    .btn{background:rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;cursor:pointer;border:none;color:#fff}
+    .btn{background:rgba(255,255,255,0.06);border-radius:8px;padding:8px 10px;cursor:pointer;border:none;color:#fff; transition: background 0.2s}
+    .btn:hover {background:rgba(255,255,255,0.1)}
+    
+    .skins-container { text-align: center; padding: 10px; }
+    .skin-selector { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 12px; }
+    .skin-btn {
+      padding: 8px 15px;
+      border: 2px solid transparent;
+      background: var(--glass);
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .skin-btn:hover {
+        border-color: rgba(255,255,255,0.2);
+    }
+    .skin-btn.active {
+      border-color: var(--accent1);
+      color: var(--accent1);
+      font-weight: bold;
+      transform: scale(1.05);
+    }
+
     .section-title{font-size:.95rem;color:var(--accent1);margin:0 0 8px}
+    
+    @media (min-width: 1150px) {
+        .right, #tabOverlay {
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 1148px;
+        }
+        .right {
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+    }
+    
     @media (max-width:960px){.site{grid-template-columns:1fr;}}
     @media (max-width:520px){#cookieButton{width:160px;height:160px;font-size:2.6rem}}
   </style>
@@ -79,46 +616,94 @@
           <button class="btn" id="resetBtn">Reset</button>
         </div>
       </div>
-
+      
       <div style="margin-top:14px">
         <h3 class="section-title">How to play</h3>
         <p style="margin:6px 0;color:var(--muted)">Click the cookie to get cookies. Buy items in the shop to increase cookies per second (CPS). Watch out for the Super Cookie — it gives 50% off for 30 seconds!</p>
       </div>
     </main>
 
-    <aside class="right">
-      <h3 class="section-title">🛒 Shop</h3>
-      <div id="shop" class="shop"></div>
-    </aside>
-
-    <footer>By Flapy❤️❤️❤️ Flap Flap FLAPY is my youtube channel!                       speacial thanks to chat GPT for the idea</footer>
+    <footer>By Flapy❤️❤️❤️ Flap Flap FLAPY is my youtube channel!                       speacial thanks to chat GPT for the idea</footer>
   </div>
+  
+  <div id="tabOverlay">
+      <div id="shopTab" class="tab-content active" data-tab-content="shop">
+        <h3 class="section-title">🛒 Shop</h3>
+        <div id="shop" class="shop"></div>
+      </div>
+      
+      <div id="skinsTab" class="tab-content" data-tab-content="skins">
+        <div class="skins-container">
+          <h3 class="section-title">🎨 Skins</h3>
+          <p style="color:var(--muted); margin-bottom: 15px;">Change the look of your bakery! (Total: 25 Skins)</p>
+          <div class="skin-selector" id="skinSelector">
+            </div>
+        </div>
+      </div>
+  </div>
+
+  <aside class="right" id="tabBar">
+    <div class="tabs-container">
+        <button class="tab-button active" data-tab="shop">🛒 Shop</button>
+        <button class="tab-button" data-tab="skins">🎨 Skins</button>
+        <button class="tab-button" data-tab="close">❌ Close</button>
+    </div>
+  </aside>
 
   <script>
     const GAME_VERSION = '1.0';
     const SAVE_KEY = 'cookiepuncher_save';
+    const SKIN_SAVE_KEY = 'cookiepuncher_skin';
 
-   const ITEM_DEFINITIONS = [ 
-                { name: "Cursor", emoji: "🖱️", baseCost: 10, cps: 1, costGrow: 1.5 },
-                { name: "cookie candy", emoji: "🍭", baseCost: 100, cps: 3, costGrow: 1.5 },
-                { name: "Grandpa", emoji: "👴", baseCost: 200, cps: 5, costGrow: 1.7 },           
-                { name: "cookie famaly", emoji: "👨‍👩‍👦", baseCost: 250, cps: 10, costGrow: 1.75 },
-                { name: "cookie monster", emoji: "🍪😈", baseCost: 500, cps: 15, costGrow: 1.755 },
-                { name: "cookie drone", emoji: "🚁", baseCost: 750, cps: 20, costGrow: 1.7555 },
-                { name: "Factory", emoji: "🏭", baseCost: 1000, cps: 25, costGrow: 1.8 },
-                { name: "Cyclops", emoji: "👁️", baseCost: 2500, cps: 50, costGrow: 1.9 },
-                { name: "Wizard", emoji: "🧙", baseCost: 5000, cps: 100, costGrow: 1.95 },
-                { name: "cookie cannon", emoji: "💥", baseCost: 7000, cps: 200, costGrow: 1.955 },
-                { name: "Cookie Town", emoji: "🌆", baseCost: 10000, cps: 250, costGrow: 1.9555 },
-                { name: "Cookie hero", emoji: "👤", baseCost: 15000, cps: 300, costGrow: 1.95555 },
-                { name: "Portal", emoji: "🚀", baseCost: 20000, cps: 500, costGrow: 2.0 },
-                { name: "Time Machine", emoji: "⏳", baseCost: 100000, cps: 2500, costGrow: 2.15 },
-                { name: "cookie earth", emoji: "🌎", baseCost: 500000, cps: 5000, costGrow: 2.20 },
-                { name: "Cookie Galaxy", emoji: "🌌", baseCost: 1000000, cps: 10000, costGrow: 2.3 },
-                { name: "Cookie multiverce", emoji: "🌌🌌🌌", baseCost: 5000000, cps: 100000, costGrow: 2.35 },
-                { name: "10000 Cookie robots", emoji: "🤖🤖", baseCost: 10000000, cps: 250000, costGrow: 2.4},
-                { name: "100m cookie subscribers", emoji: "🍪", baseCost: 100000000, cps: 300000, costGrow: 2.5},
-   ];
+    const ITEM_DEFINITIONS = [
+      { name: "Cursor", emoji: "🖱️", baseCost: 10, cps: 1, costGrow: 1.5 },
+      { name: "cookie candy", emoji: "🍭", baseCost: 100, cps: 3, costGrow: 1.5 },
+      { name: "Grandpa", emoji: "👴", baseCost: 200, cps: 5, costGrow: 1.7 },
+      { name: "cookie famaly", emoji: "👨‍👩‍👦", baseCost: 250, cps: 10, costGrow: 1.75 },
+      { name: "cookie monster", emoji: "🍪😈", baseCost: 500, cps: 15, costGrow: 1.755 },
+      { name: "cookie drone", emoji: "🚁", baseCost: 750, cps: 20, costGrow: 1.7555 },
+      { name: "Factory", emoji: "🏭", baseCost: 1000, cps: 25, costGrow: 1.8 },
+      { name: "Cyclops", emoji: "👁️", baseCost: 2500, cps: 50, costGrow: 1.9 },
+      { name: "Wizard", emoji: "🧙", baseCost: 5000, cps: 100, costGrow: 1.95 },
+      { name: "cookie cannon", emoji: "💥", baseCost: 7000, cps: 200, costGrow: 1.955 },
+      { name: "Cookie Town", emoji: "🌆", baseCost: 10000, cps: 250, costGrow: 1.9555 },
+      { name: "Cookie hero", emoji: "👤", baseCost: 15000, cps: 300, costGrow: 1.95555 },
+      { name: "Portal", emoji: "🚀", baseCost: 20000, cps: 500, costGrow: 2.0 },
+      { name: "Time Machine", emoji: "⏳", baseCost: 100000, cps: 2500, costGrow: 2.15 },
+      { name: "cookie earth", emoji: "🌎", baseCost: 500000, cps: 5000, costGrow: 2.20 },
+      { name: "Cookie Galaxy", emoji: "🌌", baseCost: 1000000, cps: 10000, costGrow: 2.3 },
+      { name: "Cookie multiverce", emoji: "🌌🌌🌌", baseCost: 5000000, cps: 100000, costGrow: 2.35 },
+      { name: "10000 Cookie robots", emoji: "🤖🤖", baseCost: 10000000, cps: 250000, costGrow: 2.4},
+      { name: "100m cookie subscribers", emoji: "🍪", baseCost: 100000000, cps: 300000, costGrow: 2.5},
+    ];
+
+    const SKIN_DEFINITIONS = [
+      { name: "Classic", className: "" },
+      { name: "Midnight", className: "skin-Midnight" },
+      { name: "Forest", className: "skin-Forest" }, 
+      { name: "Lava", className: "skin-Lava" },
+      { name: "Ocean", className: "skin-Ocean" },
+      { name: "Gold", className: "skin-Gold" },
+      { name: "Retro", className: "skin-Retro" },
+      { name: "High Contrast", className: "skin-Contrast" },
+      { name: "Candy", className: "skin-Candy" },
+      { name: "Space", className: "skin-Space" },
+      { name: "Autumn", className: "skin-Autumn" },
+      { name: "Vaporwave", className: "skin-Vaporwave" },
+      { name: "Jungle", className: "skin-Jungle" },
+      { name: "Monochrome", className: "skin-Monochrome" },
+      { name: "Valentine", className: "skin-Valentine" },
+      { name: "Ice", className: "skin-Ice" },
+      { name: "Laser Grid", className: "skin-LaserGrid" },
+      { name: "Toxic", className: "skin-Toxic" },
+      { name: "Electric", className: "skin-Electric" },
+      { name: "Hacker", className: "skin-Hacker" },
+      { name: "Firestorm", className: "skin-Firestorm" },
+      { name: "Deep Pink", className: "skin-DeepPink" },
+      { name: "Sub Zero", className: "skin-SubZero" },
+      { name: "Glitch", className: "skin-Glitch" },
+      { name: "Toxic Waste", className: "skin-ToxicWaste" },
+    ];
 
     function formatNumber(n){
       if(n >= 1e9) return (n/1e9).toFixed(2)+'B';
@@ -133,8 +718,11 @@
         this.discountActive = false;
         this.discountTimer = 0;
         this.items = ITEM_DEFINITIONS.map(d => ({...d, owned:0, cost:d.baseCost}));
+        this.activeSkin = SKIN_DEFINITIONS[0];
+        this.activeTab = 'shop';
 
         this.dom = {
+          body: document.body,
           cookieButton: document.getElementById('cookieButton'),
           superCookie: document.getElementById('superCookie'),
           scoreEl: document.getElementById('score'),
@@ -143,13 +731,22 @@
           discountTimerEl: document.getElementById('discountTimer'),
           saveBtn: document.getElementById('saveBtn'),
           loadBtn: document.getElementById('loadBtn'),
-          resetBtn: document.getElementById('resetBtn')
+          resetBtn: document.getElementById('resetBtn'),
+          skinSelector: document.getElementById('skinSelector'),
+          tabBar: document.getElementById('tabBar'),
+          tabOverlay: document.getElementById('tabOverlay'),
+          tabButtons: document.querySelectorAll('.tab-button'), 
+          tabContents: document.querySelectorAll('.tab-content')
         };
 
+        this._loadSkin();
         this._bindEvents();
         this.buildShop();
+        this.buildSkinSelector();
         this.updateUI();
         this.startLoops();
+        
+        this.switchTab('shop'); 
       }
 
       _bindEvents(){
@@ -158,6 +755,39 @@
         this.dom.saveBtn.addEventListener('click', ()=> this.saveGame(true));
         this.dom.loadBtn.addEventListener('click', ()=> this.loadGame(true));
         this.dom.resetBtn.addEventListener('click', ()=> this.resetGame());
+        
+        this.dom.tabButtons.forEach(button => {
+            button.addEventListener('click', (e) => this.handleTabClick(e.target.dataset.tab));
+        });
+      }
+      
+      handleTabClick(tabName) {
+          if (tabName === 'close') {
+              this.closeTab();
+          } else if (this.activeTab === tabName && this.dom.tabOverlay.classList.contains('active')) {
+              this.closeTab();
+          } else {
+              this.switchTab(tabName);
+          }
+      }
+
+      switchTab(tabName) {
+        this.activeTab = tabName;
+        
+        this.dom.tabButtons.forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`.tab-button[data-tab="${tabName}"]`).classList.add('active');
+        
+        this.dom.tabContents.forEach(content => content.classList.remove('active'));
+        document.querySelector(`.tab-content[data-tab-content="${tabName}"]`).classList.add('active');
+        
+        this.dom.tabOverlay.classList.add('active');
+      }
+      
+      closeTab() {
+        this.activeTab = null;
+        this.dom.tabButtons.forEach(btn => btn.classList.remove('active'));
+        this.dom.tabOverlay.classList.remove('active');
+        this.dom.tabContents.forEach(content => content.classList.remove('active'));
       }
 
       get totalCPS(){
@@ -214,6 +844,51 @@
           this.dom.shopEl.appendChild(div);
         });
       }
+      
+      buildSkinSelector() {
+        this.dom.skinSelector.innerHTML = '';
+        SKIN_DEFINITIONS.forEach(skin => {
+          const button = document.createElement('button');
+          button.className = 'skin-btn';
+          button.textContent = skin.name;
+          if (this.activeSkin.name === skin.name) {
+            button.classList.add('active');
+          }
+          button.addEventListener('click', () => this.changeSkin(skin));
+          this.dom.skinSelector.appendChild(button);
+        });
+      }
+      
+      changeSkin(skin) {
+        this.dom.body.classList.remove(...SKIN_DEFINITIONS.map(s => s.className).filter(c => c)); 
+        if (skin.className) {
+          this.dom.body.classList.add(skin.className);
+        }
+        
+        this.activeSkin = skin;
+        this.saveSkin();
+        this.dom.skinSelector.querySelectorAll('.skin-btn').forEach(btn => {
+          btn.classList.remove('active');
+          if (btn.textContent === skin.name) {
+            btn.classList.add('active');
+          }
+        });
+        
+        this.updateUI();
+      }
+
+      saveSkin() {
+        localStorage.setItem(SKIN_SAVE_KEY, this.activeSkin.name);
+      }
+
+      _loadSkin() {
+        const savedSkinName = localStorage.getItem(SKIN_SAVE_KEY);
+        const skin = SKIN_DEFINITIONS.find(s => s.name === savedSkinName) || SKIN_DEFINITIONS[0];
+        this.activeSkin = skin;
+        if (skin.className) {
+          this.dom.body.classList.add(skin.className);
+        }
+      }
 
       updateUI(){
         this.dom.scoreEl.textContent = `Cookies: ${formatNumber(this.cookies)}`;
@@ -244,6 +919,7 @@
           items:this.items.map(i=>({owned:i.owned,cost:i.cost}))
         };
         localStorage.setItem(SAVE_KEY,JSON.stringify(save));
+        this.saveSkin();
         if(show) alert('Game saved!');
       }
 
@@ -255,13 +931,16 @@
         s.items.forEach((d,i)=>{
           if(this.items[i]){ this.items[i].owned=d.owned; this.items[i].cost=d.cost; }
         });
+        this._loadSkin();
+        this.buildSkinSelector();
         this.updateUI();
         if(show) alert('Game loaded!');
       }
 
       resetGame(){
-        if(confirm('Reset everything?')){
+        if(confirm('Reset everything, including your cookies and upgrades?')){
           localStorage.removeItem(SAVE_KEY);
+          localStorage.removeItem(SKIN_SAVE_KEY);
           location.reload();
         }
       }
